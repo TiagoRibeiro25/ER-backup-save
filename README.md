@@ -4,7 +4,7 @@ Playing Souls games on PC while being online, can sometimes be a pain. Me and ma
 
 ### Installation
 
-Extract "ER-Auto Backup Save.exe" to any folder of your choice. Keep in mind that this script will automatically create a folder named "backup saves" in the same folder as the executable.
+Extract "ER-Auto Backup Save.exe" and "settings.ini" to any folder of your choice. Keep in mind that this script will automatically create a folder named "backup saves" in the same folder as these two files.
 
 ### Usage
 
