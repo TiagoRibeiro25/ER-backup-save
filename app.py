@@ -3,7 +3,11 @@ from tkinter import messagebox
 from tkinter import filedialog
 from datetime import datetime
 import time
+import os
 import functions
+
+# * Get user settings
+user_settings = functions.get_user_settings()
 
 # * Global Variables
 # Colors
@@ -12,12 +16,12 @@ SECOND_COLOR = '#006699'
 THIRD_COLOR = '#b7e5ed'
 FOURTH_COLOR = '#90dbe8'
 FIFTH_COLOR = '#ff0004'
-# Description
-APP_DESCRIPTION = "This program will automatically\n backup your save files to a folder."
 # Default time value in minutes
-DEFAULT_TIME_VALUE = "30"
+DEFAULT_TIME_VALUE = user_settings[1]
 # Backup Loop Variable
 CONTINUE_BACKUP = False
+# Default path for the save file
+SOURCE_FILE_LOCATION = user_settings[0]
 
 
 # * Functions
@@ -35,10 +39,25 @@ def backup_save():
         messagebox.showerror("Invalid Input", "Please enter a valid number.")
         return
 
+    # Check if the save file exists
+    global SOURCE_FILE_LOCATION
+    if not functions.verify_if_save_file_exists(SOURCE_FILE_LOCATION):
+        messagebox.showerror("File Not Found", "The save file was not found.")
+        return
+
     # Disable backup button and input time field
     backup_button.config(state=DISABLED)
     time_input.config(state=DISABLED)
     stop_button.config(state=NORMAL)
+
+    # update global variable
+    global DEFAULT_TIME_VALUE
+    DEFAULT_TIME_VALUE = int(input_time_value)
+
+    SOURCE_FILE_LOCATION = save_file_location_input.get()
+
+    # update config file
+    functions.update_settings(SOURCE_FILE_LOCATION, str(DEFAULT_TIME_VALUE))
 
     global CONTINUE_BACKUP
     CONTINUE_BACKUP = True
@@ -63,7 +82,7 @@ def loop_backup(time_milliseconds):
     global CONTINUE_BACKUP
 
     # Copy the save file
-    functions.copy_save_file()
+    functions.copy_save_file(SOURCE_FILE_LOCATION)
 
     # Check if the user pressed the "Stop" button
     if CONTINUE_BACKUP:
@@ -80,6 +99,28 @@ def stop_backup_loop():
     backup_button.config(state=NORMAL)
     time_input.config(state=NORMAL)
     stop_button.config(state=DISABLED)
+
+
+def search_path():
+    file = filedialog.askopenfile(
+        mode='r', filetypes=[('Elden Ring Save File', '*.sl2')])
+    if file:
+        filepath = os.path.abspath(file.name)
+
+        # Update save_file_location input
+        save_file_location_input.delete(0, END)
+        save_file_location_input.insert(0, str(filepath))
+
+        # Update global variable
+        global SOURCE_FILE_LOCATION
+        SOURCE_FILE_LOCATION = str(filepath)
+
+        global DEFAULT_TIME_VALUE
+        DEFAULT_TIME_VALUE = time_input.get()
+
+        # TODO: Update user settings
+        functions.update_settings(
+            SOURCE_FILE_LOCATION, str(DEFAULT_TIME_VALUE))
 
 
 # * Main Window
@@ -101,10 +142,23 @@ app_title = Label(section, text='Elden Ring - Backup Save',
                   font=("Arial", 22, "bold"), fg=SECOND_COLOR, bg=THIRD_COLOR)
 app_title.place(relx=0.50, rely=0.1, anchor="center")
 
-# Description
-app_description = Label(section, text=APP_DESCRIPTION,
-                        font=("Arial", 11, "bold"), fg=SECOND_COLOR, bg=THIRD_COLOR)
-app_description.place(relx=0.50, rely=0.3, anchor="center")
+# Save File Location
+save_file_location_lbl = Label(section, text="Save File Location:",
+                               font=("Arial", 11, "bold"), fg=SECOND_COLOR, bg=THIRD_COLOR)
+save_file_location_lbl.place(relx=0.50, rely=0.25, anchor="center")
+
+save_file_location_input = Entry(section, width=45, font=(
+    "Arial", 9, "bold"), fg=SECOND_COLOR, bg=THIRD_COLOR, justify=CENTER)
+save_file_location_input.place(relx=0.47, rely=0.33, anchor="center")
+
+# Insert default path from the settings file
+save_file_location_input.insert(0, SOURCE_FILE_LOCATION)
+
+# Browse Button
+browse_button = Button(section, text="Browse", font=(
+    "Arial", 7, "bold"), fg=SECOND_COLOR, bg=THIRD_COLOR, relief=GROOVE, command=search_path)
+browse_button.place(relx=0.84, rely=0.33, anchor="center")
+
 
 # Time between backups
 time_lbl = Label(section, text='Time between backups:\n(in minutes)',
