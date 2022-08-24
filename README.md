@@ -8,7 +8,7 @@ Extract "ER-Auto Backup Save.exe" and "settings.ini" to any folder of your choic
 
 ### Usage
 
-In order to use this app, insert the path to your save file and the cooldown time you want between each backup in minutes (invalid inputs will be ignored and show a warning message). Every time the backup event is triggered (every x minutes), a folder inside "backup saves" will be created with the Date and Time of the backup. This app must be running in order for the backups to work.
+In order to use this app, insert the path to your save file, the cooldown time you want between each backup in minutes (invalid inputs will be ignored and show a warning message) and the max amount of backups (after reaching that amount, the oldest backup save will be deleted and replaced with the newest one). Every time the backup event is triggered (every x minutes), a folder inside "backup saves" will be created with the Date and Time of the backup. This app must be running in order for the backups to work.
 
 ### Credits
 

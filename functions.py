@@ -1,6 +1,5 @@
 import os
 import datetime
-from random import seed
 import shutil
 
 
@@ -15,8 +14,10 @@ def get_user_settings():
                 save_file_location = param[1]
             elif param[0] == "time between backups - ":
                 time_between_backups = param[1]
+            elif param[0] == "max amount of backups - ":
+                max_amount_of_folders = param[1]
 
-        return [save_file_location, time_between_backups]
+        return [save_file_location, time_between_backups, max_amount_of_folders]
 
 
 def check_if_folder_exists():
@@ -50,7 +51,7 @@ def copy_save_file(source_save_file):
     shutil.copy(source_save_file, destination_save_file)
 
 
-def update_settings(save_file_location, time_between_backups):
+def update_settings(save_file_location, time_between_backups, max_amount_of_saves):
     """
     Update the settings.ini file with the new values
     """
@@ -66,8 +67,36 @@ def update_settings(save_file_location, time_between_backups):
                 settings += "save file location - \"" + save_file_location + "\"\n"
             elif param[0] == "time between backups - ":
                 settings += "time between backups - \"" + time_between_backups + "\"\n"
+            elif param[0] == "max amount of backups - ":
+                settings += "max amount of backups - \"" + max_amount_of_saves + "\"\n"
             else:
                 settings += line
 
     with open("settings.ini", "w") as settings_file:
         settings_file.write(settings)
+
+
+def delete_oldest_save(max_amount_of_folders):
+    """
+    Check if there are more than x backups in the backup saves folder. If there are, delete the oldest one.
+    If the max amount of backups is 0 or lower, don't delete any backups.
+    """
+
+    if max_amount_of_folders <= 0:
+        return
+
+    # Get the list of all the folders in the backup saves folder
+    files = os.listdir('./backup saves')
+
+    if len(files) > max_amount_of_folders:
+        # Sort files by date and time
+        files.sort(key=lambda x: os.path.getmtime('./backup saves/' + x))
+
+        oldest_file = files[0]
+
+        # Delete the oldest file
+        shutil.rmtree('backup saves/' + oldest_file)
+
+        # Call this function until the amount of folders is less than x (recursion)
+        if len(files) > max_amount_of_folders:
+            delete_oldest_save(max_amount_of_folders)
