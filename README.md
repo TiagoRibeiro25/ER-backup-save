@@ -10,6 +10,8 @@ Extract "ER-Auto Backup Save.exe" and "settings.ini" to any folder of your choic
 
 In order to use this app, insert the path to your save file, the cooldown time you want between each backup in minutes (invalid inputs will be ignored and show a warning message) and the max amount of backups (after reaching that amount, the oldest backup save will be deleted and replaced with the newest one). Every time the backup event is triggered (every x minutes), a folder inside "backup saves" will be created with the Date and Time of the backup. This app must be running in order for the backups to work.
 
+Update: A new button has been added to the app (restore button), which will allow you to restore your latest backup save. This will overwrite your current save file with the latest backup save. If there are no backup saves, an error message will be shown.
+
 ### Credits
 
 This app was created by 25GOLD25.
