@@ -100,3 +100,41 @@ def delete_oldest_save(max_amount_of_folders):
         # Call this function until the amount of folders is less than x (recursion)
         if len(files) > max_amount_of_folders:
             delete_oldest_save(max_amount_of_folders)
+
+
+def verify_if_backup_folder_is_empty():
+    """
+    Verify if the backup saves folder is empty
+    """
+
+    files = os.listdir('./backup saves')
+
+    if len(files) == 0:
+        return True
+    else:
+        return False
+
+
+def restore(source_file_path, destination_file_path):
+    """
+    Restore the save file from a backup
+    """
+
+    shutil.copy(source_file_path, destination_file_path)
+
+
+def get_latest_backup_save():
+    """
+    Get the latest backup save
+    """
+
+    # Get the list of all the folders in the backup saves folder
+    files = os.listdir('./backup saves')
+
+    # Sort files by date and time
+    files.sort(key=lambda x: os.path.getmtime('./backup saves/' + x))
+
+    latest_file = "./backup saves/" + \
+        files[-1] + "/" + os.listdir('./backup saves/' + files[-1])[0]
+
+    return latest_file

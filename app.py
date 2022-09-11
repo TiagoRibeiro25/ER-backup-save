@@ -50,6 +50,8 @@ def backup_save():
     # Disable backup button and input time field
     backup_button.config(state=DISABLED)
     time_input.config(state=DISABLED)
+    max_saves_input.config(state=DISABLED)
+    restore_button.config(state=DISABLED)
     stop_button.config(state=NORMAL)
 
     # update global variable
@@ -107,6 +109,8 @@ def stop_backup_loop():
 
     backup_button.config(state=NORMAL)
     time_input.config(state=NORMAL)
+    max_saves_input.config(state=NORMAL)
+    restore_button.config(state=NORMAL)
     stop_button.config(state=DISABLED)
 
 
@@ -133,6 +137,18 @@ def search_path():
         # TODO: Update user settings
         functions.update_settings(
             SOURCE_FILE_LOCATION, str(DEFAULT_TIME_VALUE), str(MAX_SAVES))
+
+
+def restore():
+    # Check if there are any backup saves
+    # (check if there are any folders inside the backup folder)
+    if functions.verify_if_backup_folder_is_empty():
+        messagebox.showerror(
+            "No Backups", "There are no backup saves to restore.")
+        return
+    # Copy the latest backup save to the source file location
+    # (the one used by the game) and replace it
+    functions.restore(functions.get_latest_backup_save(), SOURCE_FILE_LOCATION)
 
 
 # * Main Window
@@ -213,9 +229,9 @@ stop_button = Button(buttons_section, text='Stop', font=("Arial", 14, "bold"), f
 stop_button.place(x=113, y=0, width=113, height=50)
 
 
-quit_button = Button(buttons_section, text='Quit', font=("Arial", 14, "bold"), fg=SECOND_COLOR, bg=FOURTH_COLOR, highlightbackground=FIRST_COLOR,
-                     highlightcolor=FIRST_COLOR, highlightthickness=1, activebackground=FOURTH_COLOR, activeforeground=SECOND_COLOR, command=lambda: root.destroy())
-quit_button.place(x=226, y=0, width=113, height=50)
+restore_button = Button(buttons_section, text='Restore', font=("Arial", 14, "bold"), fg=SECOND_COLOR, bg=FOURTH_COLOR, highlightbackground=FIRST_COLOR,
+                        highlightcolor=FIRST_COLOR, highlightthickness=1, activebackground=FOURTH_COLOR, activeforeground=SECOND_COLOR, command=restore)
+restore_button.place(x=226, y=0, width=113, height=50)
 
 
 # Check if the backup folder exists(if not creates one)
